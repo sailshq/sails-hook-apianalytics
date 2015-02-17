@@ -1,6 +1,6 @@
 {
   "name": "sails-hook-apianalytics",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Hook for advanced logging of API requests to a Sails.js server.",
   "main": "index.js",
   "scripts": {
