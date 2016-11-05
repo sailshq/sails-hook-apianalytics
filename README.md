@@ -1,4 +1,4 @@
-# sails-hook-apianalytics
+# sails-hook-logger
 
 A Sails hook for logging detailed request metadata and monitoring your API.
 
@@ -10,7 +10,7 @@ A Sails hook for logging detailed request metadata and monitoring your API.
 From your sails app:
 
 ```bash
-$ npm install sails-hook-apianalytics --save
+$ npm install sails-hook-logger --save
 ```
 
 That's it!  Next time you lift, and then send a request to the server, you should see stuff getting logged.
@@ -22,16 +22,16 @@ It will look something like this:
 
 ## Configuration
 
-Optionally, you can customize this hook in a few different ways by configuring `sails.config.apianalytics`.
+Optionally, you can customize this hook in a few different ways by configuring `sails.config.log`.
 
-For instance, you might create `config/apianalytics.js`:
+For instance, you might create `config/log.js`:
 
 ```javascript
-// `config/apianalytics.js`
+// `config/log.js`
 
 module.exports = {
 
-  apianalytics: {
+  log: {
 
     /**
      * An array of route addresses to monitor.
@@ -105,7 +105,7 @@ module.exports = {
 If you have further questions or are having trouble, click [here](http://sailsjs.com/support).
 
 
-## Bugs &nbsp; [![NPM version](https://badge.fury.io/js/sails-hook-apianalytics.svg)](http://npmjs.com/package/sails-hook-apianalytics)
+## Bugs &nbsp; [![NPM version](https://badge.fury.io/js/sails-hook-logger.svg)](http://npmjs.com/package/sails-hook-logger)
 
 To report a bug, [click here](http://sailsjs.com/bugs).
 
@@ -114,7 +114,7 @@ To report a bug, [click here](http://sailsjs.com/bugs).
 
 Please observe the guidelines and conventions laid out in the [Sails project contribution guide](http://sailsjs.com/contribute) when opening issues or submitting pull requests.
 
-[![NPM info](https://nodei.co/npm/sails-hook-apianalytics.png?downloads=true)](http://npmjs.com/package/sails-hook-apianalytics)
+[![NPM info](https://nodei.co/npm/sails-hook-logger.png?downloads=true)](http://npmjs.com/package/sails-hook-logger)
 
 ## License
 

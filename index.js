@@ -11,9 +11,9 @@ var getStatusCodeColor = require('./private/get-status-code-color');
 
 
 /**
- * sails-hook-apianalytics
+ * sails-hook-logger
  */
-module.exports = function sailsHookApiAnalytics(sails) {
+module.exports = function sailsHookLogger(sails) {
   return {
 
     /**
@@ -21,7 +21,7 @@ module.exports = function sailsHookApiAnalytics(sails) {
      */
     defaults: {
 
-      apianalytics: {
+      logger: {
 
         routesToLog: [
           '/*'
@@ -59,7 +59,7 @@ module.exports = function sailsHookApiAnalytics(sails) {
             var now = Date.now();
             var MS_DEAD_AIR_BEFORE_NEW_LANDMARK = 30*1000;// 30 seconds
             var MS_DEAD_AIR_BEFORE_WRITING_OUT_ENTIRE_TIMESTAMP = 2*60*60*1000;// 2 hours
-            var msSinceLastRequestReceived = now - sails.hooks.apianalytics._lastResponseFinishedAt;
+            var msSinceLastRequestReceived = now - sails.hooks.logger._lastResponseFinishedAt;
 
             // If this is the first request in a long while, then log an ENTIRE timestamp.
             if (msSinceLastRequestReceived > MS_DEAD_AIR_BEFORE_WRITING_OUT_ENTIRE_TIMESTAMP) {
@@ -114,7 +114,7 @@ module.exports = function sailsHookApiAnalytics(sails) {
 
             // Now, before we continue, update the `_lastResponseFinishedAt` timestamp,
             // so that it's ready to go for next time.
-            sails.hooks.apianalytics._lastResponseFinishedAt = now;
+            sails.hooks.logger._lastResponseFinishedAt = now;
 
 
 
@@ -266,16 +266,16 @@ module.exports = function sailsHookApiAnalytics(sails) {
 
             // If an unhandled error occurs, dump it to the terminal.
             // (but don't let it crash the process!)
-            sails.log.error('Consistency violation: `sails-hook-apianalytics` encountered an unexpected error when attempting to log information about an incoming request.  Details:',e);
+            sails.log.error('Consistency violation: `sails-hook-logger` encountered an unexpected error when attempting to log information about an incoming request.  Details:',e);
             return;
 
           }//>-•
 
           // All done.
 
-        }//</default `sails.config.apianalytics.onResponse` notifier>
+        }//</default `sails.config.log.onResponse` notifier>
 
-      }//</definition of default `sails.config.apianalytics` dictionary>
+      }//</definition of default `sails.config.log` dictionary>
 
     },//</defaults>
 
@@ -286,12 +286,12 @@ module.exports = function sailsHookApiAnalytics(sails) {
      * @param   {Function}  next    Callback function to call after all is done
      */
     initialize: function initialize(next) {
-      sails.log.debug('Initializing `apianalytics` hook...  (requests to monitored routes will be logged!)');
+      sails.log.debug('Initializing `logger` hook...  (requests to monitored routes will be logged!)');
 
       // Listen for when the router in Sails says it's time to bind "before" shadow routes:
       sails.on('router:before', function routerBefore() {
 
-        _.each(sails.config.apianalytics.routesToLog, function iterator(routeAddress) {
+        _.each(sails.config.log.routesToLog, function iterator(routeAddress) {
           sails.router.bind(routeAddress, logRequestWare);
         });
 
@@ -302,7 +302,7 @@ module.exports = function sailsHookApiAnalytics(sails) {
       // this hook finished handling a response (or in this case, when
       // this hook was initialized).  We use this to be able to write
       // date/time "landmarks" to the terminal.
-      sails.hooks.apianalytics._lastResponseFinishedAt = Date.now();
+      sails.hooks.logger._lastResponseFinishedAt = Date.now();
 
       return next();
 

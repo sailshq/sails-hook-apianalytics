@@ -1,5 +1,5 @@
 {
-  "name": "sails-hook-apianalytics",
+  "name": "sails-hook-logger",
   "version": "1.1.1",
   "description": "Hook for advanced logging of API requests to a Sails.js server.",
   "main": "index.js",
@@ -16,9 +16,9 @@
   "author": "Mike McNeil",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/treeline-io/sails-hook-apianalytics/issues"
+    "url": "https://github.com/treeline-io/sails-hook-logger/issues"
   },
-  "homepage": "https://github.com/treeline-io/sails-hook-apianalytics",
+  "homepage": "https://github.com/treeline-io/sails-hook-logger",
   "dependencies": {
     "fs-extra": "^0.15.0",
     "lodash": "^3.0.0",
@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/treeline-io/sails-hook-apianalytics.git"
+    "url": "git://github.com/treeline-io/sails-hook-logger.git"
   },
   "sails": {
     "isHook": true

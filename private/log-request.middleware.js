@@ -21,7 +21,7 @@ module.exports = function logRequest_middleware(req, res, next) {
     path: req.path,
     method: req.method,
 
-    allParams: redactProtectedKeys(req.allParams(), sails.config.apianalytics.dontLogParams),
+    allParams: redactProtectedKeys(req.allParams(), sails.config.log.dontLogParams),
 
     protocol: req.protocol,
 
@@ -39,9 +39,9 @@ module.exports = function logRequest_middleware(req, res, next) {
       url: req.url,
       transport: req.transport,
       options: req.options,
-      queryParams: redactProtectedKeys(req.query, sails.config.apianalytics.dontLogParams),
-      routeParams: redactProtectedKeys(req.params, sails.config.apianalytics.dontLogParams),
-      bodyParams: redactProtectedKeys(req.body, sails.config.apianalytics.dontLogParams)
+      queryParams: redactProtectedKeys(req.query, sails.config.log.dontLogParams),
+      routeParams: redactProtectedKeys(req.params, sails.config.log.dontLogParams),
+      bodyParams: redactProtectedKeys(req.body, sails.config.log.dontLogParams)
     }
 
   };//</build initial report>
@@ -57,8 +57,8 @@ module.exports = function logRequest_middleware(req, res, next) {
 
 
   // Call `onRequest` function
-  if (_.isFunction(sails.config.apianalytics.onRequest)) {
-    sails.config.apianalytics.onRequest(report, req, res);
+  if (_.isFunction(sails.config.log.onRequest)) {
+    sails.config.log.onRequest(report, req, res);
   }//>-
 
 
@@ -98,8 +98,8 @@ module.exports = function logRequest_middleware(req, res, next) {
     report.userSession = _.cloneDeep(req.session);
 
     // Call log function
-    if (_.isFunction(sails.config.apianalytics.onResponse)) {
-      sails.config.apianalytics.onResponse(report, req, res);
+    if (_.isFunction(sails.config.log.onResponse)) {
+      sails.config.log.onResponse(report, req, res);
     }
 
   });//</bind one-time listener for `finish` event :: i.e. res.once()>
