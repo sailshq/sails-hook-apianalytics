@@ -16,9 +16,9 @@
   "author": "Mike McNeil",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/treeline-io/sails-hook-logger/issues"
+    "url": "https://github.com/mikermcneil/sails-hook-logger/issues"
   },
-  "homepage": "https://github.com/treeline-io/sails-hook-logger",
+  "homepage": "https://github.com/mikermcneil/sails-hook-logger",
   "dependencies": {
     "fs-extra": "^0.15.0",
     "lodash": "^3.0.0",
@@ -26,9 +26,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/treeline-io/sails-hook-logger.git"
+    "url": "git://github.com/mikermcneil/sails-hook-logger.git"
   },
   "sails": {
-    "isHook": true
+    "isHook": true,
+    "hookName": "logger"
   }
 }
