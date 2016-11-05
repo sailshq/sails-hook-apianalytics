@@ -74,7 +74,8 @@ module.exports = function logRequest_middleware(req, res, next) {
       (report.diagnostic.middlewareLatency||0)
     );
 
-    // Check req.options for new values for 'action', 'controller' and 'model' values
+    // Check req.options for new values for 'action' and 'controller' values,
+    // _since they might have changed programmatically_ since we first tracked them.
     _.forEach(['action', 'controller', 'model'], function iterator(property) {
 
       // If not already equivalent, set `target.whatever` in our report to be
