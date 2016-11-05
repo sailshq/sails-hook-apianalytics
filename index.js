@@ -2,6 +2,7 @@
  * Module dependencies
  */
 
+var util = require('util');
 var _ = require('lodash');
 var chalk = require('chalk');
 var logRequestWare = require('./private/log-request.middleware');
@@ -39,15 +40,17 @@ module.exports = function sailsHookApiAnalytics(sails) {
           'token'
         ],
 
-        // When request starts
-        onRequest: function onRequest(log, req, res) {
+        // When request starts...
+        onRequest: function onRequest(report, req, res) {
           // Defaults to doing nothing
         },
 
-        // When request is done
-        onResponse: function onResponse(log, req, res) {
+        // When response has finished...
+        onResponse: function onResponse(report, req, res) {
+
+          // Determine appropriate indentation string.
           var indentation = (function indentation() {
-            var numChars = log.method.length + (log.path ? log.path.length : log.diagnostic.url.length);
+            var numChars = report.method.length + (report.path ? report.path.length : report.diagnostic.url.length);
             var MARGIN = 40;
 
             if (MARGIN - numChars <= 0) {
@@ -63,16 +66,19 @@ module.exports = function sailsHookApiAnalytics(sails) {
             return indentation;
           })();
 
-          // Make HTTP verb more attractive
-          var displayVerb = chalk[getVerbColor(log.method)](log.method.toUpperCase());
+          // Make HTTP method (i.e. verb) more attractive.
+          var displayMethod = chalk[getVerbColor(report.method)](report.method);
 
-          // Defaults to logging result w/ sails.log.verbose
-          console.log(chalk.bold(chalk.gray('<-')) + ' %s %s ' + indentation + chalk.gray('(%sms)'), displayVerb, log.path, log.responseTime);
+          // Build formatted output.
+          var formattedOutput = util.format(
+            chalk.bold(chalk.gray('<-')) + ' %s %s ' + indentation + chalk.gray('(%sms)'),
+            displayMethod, report.path, report.responseTime
+          );
 
-          if (!_.isUndefined(log.params)) {
-            console.log('Params:', log.params);
-          }
-        }//</definition of default `sails.config.apianalytics.onResponse` function>
+          // Now log it.
+          console.log(formattedOutput);
+
+        }//</default `sails.config.apianalytics.onResponse` notifier>
 
       }//</definition of default `sails.config.apianalytics` dictionary>
 
@@ -88,9 +94,11 @@ module.exports = function sailsHookApiAnalytics(sails) {
       sails.log.debug('Initializing `apianalytics` hook...  (requests to monitored routes will be logged!)');
 
       sails.on('router:before', function routerBefore() {
-        _.forEach(sails.config.apianalytics.routesToLog, function iterator(routeAddress) {
+
+        _.each(sails.config.apianalytics.routesToLog, function iterator(routeAddress) {
           sails.router.bind(routeAddress, logRequestWare);
         });
+
       });//</bind router:before event>
 
       return next();

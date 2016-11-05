@@ -49,7 +49,7 @@ module.exports = function redactProtectedKeys(dictionary, blacklist) {
   var cleansedCopy = _.cloneDeep(dictionary);
 
   // Loop over each top-level property and redact any that are protected.
-  cleansedCopy = _.each(blacklist, function (protectedPropName) {
+  _.each(blacklist, function (protectedPropName) {
 
     if (!_.isUndefined(cleansedCopy[protectedPropName])) {
       cleansedCopy[protectedPropName] = '*PROTECTED*';

@@ -51,12 +51,12 @@ module.exports = {
      *
      * > If omitted, this defaults to doing nothing.
      *
-     * @param {Ref} log  [logger (CaptainsLog instance)]
+     * @param {Dictionary} report  [info about the request]
      * @param {Ref} req  [request object -- careful not to modify!]
      * @param {Ref} res  [response object -- careful not to modify!  And don't try to respond!]
      * @synchronous
      */
-    onRequest: function onRequest(log, req, res) {
+    onRequest: function onRequest(report, req, res) {
 
       // ...
 
@@ -69,12 +69,12 @@ module.exports = {
      * > If omitted, this defaults to logging request metadata to the
      * > console in a vaguely attractive way.
      *
-     * @param {Ref} log  [logger (CaptainsLog instance)]
+     * @param {Dictionary} report  [info about the request]
      * @param {Ref} req  [request object -- careful not to modify!]
      * @param {Ref} res  [response object -- careful not to modify!  And don't try to respond!]
      * @synchronous
      */
-    onResponse: function onResponse(log, req, res) {
+    onResponse: function onResponse(report, req, res) {
 
       // ...
 
