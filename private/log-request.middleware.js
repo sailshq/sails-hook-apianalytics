@@ -1,120 +1,103 @@
 /**
  * Module dependencies
  */
+
 var _ = require('lodash');
+var redactProtectedKeys = require('./redact-protected-keys');
+
 
 /**
  * Track an API request.
  */
-module.exports = function logRequest(req, res, next) {
+
+module.exports = function logRequest_middleware(req, res, next) {
+
   // Get access to app instance
   var sails = req._sails;
 
   // Basic route information
-  var log = {
+  var report = {
+
     path: req.path,
     method: req.method,
+
+    allParams: redactProtectedKeys(req.allParams(), sails.config.apianalytics.dontLogParams),
+
+    protocol: req.protocol,
+
+    ip: req.protocol === 'ws' ? req.socket.handshake.address : req.ip,
+
     target: {
       action: req.options.action,
       controller: req.options.controller,
       model: req.options.model
     },
-    protocol: req.protocol,
-    ip: req.protocol == 'ws' ? req.socket.handshake.address : req.ip,
-    allParams: _securityCleanse(req.params.all(), sails.config.apianalytics.dontLogParams),
-    responseTime: 0,
 
     // The more technical stuff, for troubleshooting
     diagnostic: {
       url: req.url,
       transport: req.transport,
       options: req.options,
-      queryParams: _securityCleanse(req.query, sails.config.apianalytics.dontLogParams),
-      routeParams: _securityCleanse(req.params, sails.config.apianalytics.dontLogParams),
-      bodyParams: _securityCleanse(req.body, sails.config.apianalytics.dontLogParams),
-      middlewareLatency: _getMillisecondsElapsedSince(req._startTime)
+      queryParams: redactProtectedKeys(req.query, sails.config.apianalytics.dontLogParams),
+      routeParams: redactProtectedKeys(req.params, sails.config.apianalytics.dontLogParams),
+      bodyParams: redactProtectedKeys(req.body, sails.config.apianalytics.dontLogParams)
     }
-  };
 
-  // Call log function
+  };//</build initial report>
+
+  // Track when this was received.
+  var receivedAt = Date.now();
+
+  // If `req._startTime` exists and is valid, then compute and include `middlewareLatency` in our report.
+  // (Otherwise don't include middlewareLatency, since it'd be meaningless.)
+  if (_.isNumber(req._startTime)) {
+    report.diagnostic.middlewareLatency = receivedAt - req._startTime;
+  }//>-
+
+
+  // Call `onRequest` function
   if (_.isFunction(sails.config.apianalytics.onRequest)) {
-    sails.config.apianalytics.onRequest(log, req, res);
-  }
+    sails.config.apianalytics.onRequest(report, req, res);
+  }//>-
 
-  // When the request is finished
+
+  // Now bind a one-time listener that will fire when the request is finished.
   res.once('finish', function onceFinish() {
-    // Track total response time
-    log.responseTime = _getMillisecondsElapsedSince(req._startTime);
+
+    // Track when the response finished.
+    var finishedAt = Date.now();
+
+    // Compute and track total response time
+    // (ms since request was received here and when the response finished, + any middleware latency, if known)
+    report.responseTime = (
+      (finishedAt - receivedAt) +
+      (report.diagnostic.middlewareLatency||0)
+    );
 
     // Check req.options for new values for 'action', 'controller' and 'model' values
     _.forEach(['action', 'controller', 'model'], function iterator(property) {
-      log.target[property] = log.target[property] === req.options[property]
-        ? log.target[property]
-        : req.options[property]
-      ;
+
+      // If not already equivalent, set `target.whatever` in our report to be
+      // equal to `req.options.whatever`.
+      if (report.target[property] !== req.options[property]) {
+        report.target[property] = req.options[property];
+      }
+
     });
 
     // Save user session as embedded JSON to keep a permanent record
-    log.userSession = _.cloneDeep(req.session);
+    report.userSession = _.cloneDeep(req.session);
 
     // Call log function
     if (_.isFunction(sails.config.apianalytics.onResponse)) {
-      sails.config.apianalytics.onResponse(log, req, res);
+      sails.config.apianalytics.onResponse(report, req, res);
     }
 
-    // Replaced this w/ custom log fns
-    //////////////////////////////////////////////////////////////////////
-    // Persist activity to database
-    // LoggedRequest.create(activity).exec(function (err, activity) {
-    //   if (err) {
-    //     sails.log.error('Error logging API activity to database:');
-    //     sails.log.error(err);
-    //     return;
-    //   }
-    //   // Log result
-    //   sails.log.verbose();
-    //   sails.log.verbose(activity.method,activity.path, '(',activity.responseTime+'ms',')');
-    //   sails.log.verbose('Params:',activity.params);
-    // });
-    //////////////////////////////////////////////////////////////////////
-  });
+  });//</bind one-time listener for `finish` event :: i.e. res.once()>
+
 
   // Pass control on to app
   return next();
+
 };
 
-/**
- * Helper function to calculate how long current request take to process.
- *
- * @param  {Date}   startTime Request start time
- * @return {Number}           Total request elapsed time as in milliseconds
- * @private
- */
-function _getMillisecondsElapsedSince(startTime) {
-  return new Date() - startTime;
-}
-
-/**
- * Helper function to remove all 'secure' parameter values with *PROTECTED* string. By default this will replace
- * 'token' and 'password' property values, because there is security issue when logging these.
- *
- * @param   {{}|*}  collection  A "collection" to check for blacklisted propertied
- * @param   {[]}    properties  An array of properties to skip (replace actual value with *PROTECTED* string)
- * @returns {{}}
- * @private
- */
-function _securityCleanse(collection, properties) {
-  if (!_.isObject(collection)) {
-    return collection;
-  }
-
-  var safeCopy = _.cloneDeep(collection);
-
-  _.forEach(properties || [], function iterator(propName) {
-    if (!_.isUndefined(safeCopy[propName])) {
-      safeCopy[propName] = '*PROTECTED*';
-    }
-  });
-
-  return safeCopy;
-}

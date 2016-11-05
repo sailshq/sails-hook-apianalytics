@@ -1,6 +1,7 @@
 /**
  * Module dependencies
  */
+
 var _ = require('lodash');
 var chalk = require('chalk');
 var logRequestWare = require('./private/log-request.middleware');
