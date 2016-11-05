@@ -63,7 +63,13 @@ module.exports = function sailsHookApiAnalytics(sails) {
             // If this is the first request in a long while, then log an ENTIRE timestamp.
             if (msSinceLastRequestReceived > MS_DEAD_AIR_BEFORE_WRITING_OUT_ENTIRE_TIMESTAMP) {
 
-              logFn('\n\n\n' + chalk.bold.underline(new Date(now)) + '    ' + chalk.gray.dim('~∞%°') + '\n');
+              logFn(
+                '\n' +
+                '\n' +
+                '\n' +
+                chalk.bold.underline(new Date(now)) + '\n' +
+                '- - - - - - - - - - - - - - - - - - - - - - - - - - - - -' + '\n'
+              );
 
             }
             // Check to see how long it's been since we finished handling the most recent request.
@@ -95,7 +101,13 @@ module.exports = function sailsHookApiAnalytics(sails) {
 
               })();
 
-              logFn('\n\n\n' + chalk.bold.underline(relativeLandmarkMsg) + '    ' + chalk.gray.dim('~∞%°') + '\n');
+              logFn(
+                '\n' +
+                '\n' +
+                '\n' +
+                chalk.bold.underline(relativeLandmarkMsg) + '\n'
+              );
+
             }//>-
 
 
