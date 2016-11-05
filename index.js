@@ -141,15 +141,8 @@ module.exports = function sailsHookApiAnalytics(sails) {
             // Determine the prefix to use for this additional metadata.
             var PREFIX = chalk.gray(' |  ');
 
-            // OLD WAY:
-            //
-            // var numSpacesIn2ndaryIndentation = 2+1+report.method.length+1+report.path.length+1+indentation.length+1;
-            // var secondaryIndentation = _.repeat(' ', numSpacesIn2ndaryIndentation);
-            // console.log(
-            //   secondaryIndentation+chalk.bold(friendlifiedExitName)
-            // );
-            //
-            //NEW WAY:
+
+            // Now log the friendlified exit name, plus any other available metatdata:
             console.log(
               PREFIX+chalk.bold(friendlifiedExitName)
             );
