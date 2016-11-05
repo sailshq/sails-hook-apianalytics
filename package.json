@@ -16,9 +16,9 @@
   "author": "Mike McNeil",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/treeline-io/sails-hook-apianalytics/issues"
+    "url": "http://sailsjs.com/bugs"
   },
-  "homepage": "https://github.com/treeline-io/sails-hook-apianalytics",
+  "homepage": "http://sailsjs.com",
   "dependencies": {
     "chalk": "1.1.3",
     "fs-extra": "0.30.0",
@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/treeline-io/sails-hook-apianalytics.git"
+    "url": "git://github.com/mikermcneil/sails-hook-apianalytics.git"
   },
   "sails": {
     "isHook": true
