@@ -2,22 +2,27 @@
 
 A Sails hook for logging detailed request metadata and monitoring your API.
 
+> This hook is for Sails v1 and up, and it also maintains backwards compatibility for Sails <=v0.12.  But be aware that it provides much richer default logging for requests handled via actions2 (which is only available in Sails v1).
+
 
 ## Install
 
 From your sails app:
 
 ```bash
-$ npm install sails-hook-apianalytics
+$ npm install sails-hook-apianalytics --save
 ```
 
-That's it!  Next time you lift, you should see stuff getting logged.
+That's it!  Next time you lift, and then send a request to the server, you should see stuff getting logged.
+
+It will look something like this:
+
+![screenshot of output](https://cloud.githubusercontent.com/assets/618009/20027313/a1a6abc0-a2de-11e6-985f-306b87aebc9c.png)
 
 
 ## Configuration
 
-Optionally, this hook can be configured.
-This hook is configured under the `sails.config.apianalytics` namespace.
+Optionally, you can customize this hook in a few different ways by configuring `sails.config.apianalytics`.
 
 For instance, you might create `config/apianalytics.js`:
 
@@ -58,6 +63,7 @@ module.exports = {
      * When request starts...
      *
      * > If omitted, this defaults to doing nothing.
+     * > This can be useful for debugging.
      *
      * @param {Dictionary} report  [info about the request]
      * @param {Ref} req  [request object -- careful not to modify!]
@@ -75,7 +81,8 @@ module.exports = {
      * When response is sent...
      *
      * > If omitted, this defaults to logging request metadata to the
-     * > console in a vaguely attractive way.
+     * > console in a vaguely attractive way.  If you define this function,
+     * > then it will override the default output.
      *
      * @param {Dictionary} report  [info about the request]
      * @param {Ref} req  [request object -- careful not to modify!]

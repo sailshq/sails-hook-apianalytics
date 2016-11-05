@@ -38,6 +38,12 @@ module.exports = function sailsHookApiAnalytics(sails) {
         // When response has finished...
         onResponse: function (report, req, res) {
 
+          try {
+
+          // The log function to use.
+          // > FUTURE: This could be exposed in configuration, if someone has a good reason.
+          var logFn = console.log;
+
           // Determine appropriate indentation string.
           var indentation = (function () {
             var numChars = report.method.length + (report.path ? report.path.length : report.diagnostic.url.length);
@@ -108,6 +114,8 @@ module.exports = function sailsHookApiAnalytics(sails) {
             }
           }//>-
 
+
+
           // Build formatted output.
           var formattedOutput = util.format(
             '%s %s %s '+indentation+' %s',
@@ -118,7 +126,7 @@ module.exports = function sailsHookApiAnalytics(sails) {
           );
 
           // Now log it.
-          console.log(formattedOutput);
+          logFn(formattedOutput);
 
           // If there is an X-Exit response header, then include it.
           // (plus additional info, if available)
@@ -143,19 +151,19 @@ module.exports = function sailsHookApiAnalytics(sails) {
 
 
             // Now log the friendlified exit name, plus any other available metatdata:
-            console.log(
+            logFn(
               PREFIX+chalk.bold(friendlifiedExitName)
             );
 
 
             if (!_.isUndefined(report.responseHeaders['x-exit-description'])) {
-              console.log(
+              logFn(
                 PREFIX + chalk.reset(report.responseHeaders['x-exit-description'])
               );
             }//>-
 
             if (!_.isUndefined(report.responseHeaders['x-exit-extended-description'])) {
-              console.log(
+              logFn(
                 PREFIX + '\n'+
                 PREFIX + chalk.reset(report.responseHeaders['x-exit-extended-description'])+'\n'+
                 PREFIX
@@ -163,25 +171,34 @@ module.exports = function sailsHookApiAnalytics(sails) {
             }//>-
 
             if (!_.isUndefined(report.responseHeaders['x-exit-more-info-url'])) {
-              console.log(
+              logFn(
                 PREFIX + chalk.reset(report.responseHeaders['x-exit-more-info-url'])
               );
             }//>-
 
             if (!_.isUndefined(report.responseHeaders['x-exit-view-template-path'])) {
-              console.log(
+              logFn(
                 PREFIX+ chalk.reset.bold('view: ') + chalk.dim.blue(report.responseHeaders['x-exit-view-template-path'])
               );
             }//>-
 
             // One last newline to make it easier to read.
-            console.log(
+            logFn(
               chalk.gray(' ° ')
             );
 
           }//>-
 
           // All done.
+
+          } catch (e) {
+
+            // If an unhandled error occurs, dump it to the terminal.
+            // (but don't let it crash the process!)
+            sails.log.error('Consistency violation: `sails-hook-apianalytics` encountered an unexpected error when attempting to log information about an incoming request.  Details:',e);
+            return;
+
+          }
 
         }//</default `sails.config.apianalytics.onResponse` notifier>
 
@@ -198,6 +215,7 @@ module.exports = function sailsHookApiAnalytics(sails) {
     initialize: function initialize(next) {
       sails.log.debug('Initializing `apianalytics` hook...  (requests to monitored routes will be logged!)');
 
+      // Listen for when the router in Sails says it's time to bind "before" shadow routes:
       sails.on('router:before', function routerBefore() {
 
         _.each(sails.config.apianalytics.routesToLog, function iterator(routeAddress) {
@@ -205,6 +223,12 @@ module.exports = function sailsHookApiAnalytics(sails) {
         });
 
       });//</bind router:before event>
+
+
+      // Define a property we'll use to keep track of the last time
+      // this hook received a request.  We use this to be able to write
+      // date/time landmarks to the logs.
+      sails.hooks.apianalytics._lastRequestReceivedAt = 0;
 
       return next();
 
