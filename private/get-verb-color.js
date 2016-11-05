@@ -10,16 +10,18 @@ module.exports = function getVerbColor(method) {
   switch (method.toUpperCase()) {
 
     case 'GET':
-      return 'green';
+      return 'cyan';
     case 'POST':
       return 'yellow';
     case 'PUT':
-      return 'blue';
+      return 'yellow';
     case 'DELETE':
-      return 'red';
+      return 'yellow';
+    case 'PATCH':
+      return 'yellow';
 
     default:
-      return 'gray';
+      return 'white';
   }
 
 };

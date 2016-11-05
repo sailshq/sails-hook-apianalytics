@@ -30,7 +30,8 @@ module.exports = function logRequest_middleware(req, res, next) {
     target: {
       action: req.options.action,
       controller: req.options.controller,
-      model: req.options.model
+      model: req.options.model,
+      view: req.options.view
     },
 
     // The more technical stuff, for troubleshooting
@@ -76,7 +77,7 @@ module.exports = function logRequest_middleware(req, res, next) {
 
     // Check req.options for new values for 'action' and 'controller' values,
     // _since they might have changed programmatically_ since we first tracked them.
-    _.forEach(['action', 'controller', 'model'], function iterator(property) {
+    _.each(['action', 'controller', 'model', 'view'], function iterator(property) {
 
       // If not already equivalent, set `target.whatever` in our report to be
       // equal to `req.options.whatever`.
@@ -85,6 +86,9 @@ module.exports = function logRequest_middleware(req, res, next) {
       }
 
     });
+
+    // Add response status code to the report.
+    report.statusCode = +res.statusCode;
 
     // Save user session as embedded JSON to keep a permanent record
     report.userSession = _.cloneDeep(req.session);

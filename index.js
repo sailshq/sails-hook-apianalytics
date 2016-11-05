@@ -21,35 +21,25 @@ module.exports = function sailsHookApiAnalytics(sails) {
     defaults: {
 
       apianalytics: {
-        /**
-         * The types of requests to log
-         * (e.g. ["get /foo/bar", "post /foo", "/*"])
-         * Defaults to all routes.
-         */
+
         routesToLog: [
           '/*'
         ],
 
-        /**
-         * Parameters which should NEVER be logged
-         * (e.g. "password")
-         * If seen, they will be replaced with "*REDACTED*"
-         */
         dontLogParams: [
           'password',
           'token'
         ],
 
-        // When request starts...
-        onRequest: function onRequest(report, req, res) {
+        onRequest: function (report, req, res) {
           // Defaults to doing nothing
         },
 
         // When response has finished...
-        onResponse: function onResponse(report, req, res) {
+        onResponse: function (report, req, res) {
 
           // Determine appropriate indentation string.
-          var indentation = (function indentation() {
+          var indentation = (function () {
             var numChars = report.method.length + (report.path ? report.path.length : report.diagnostic.url.length);
             var MARGIN = 40;
 
@@ -66,13 +56,65 @@ module.exports = function sailsHookApiAnalytics(sails) {
             return indentation;
           })();
 
-          // Make HTTP method (i.e. verb) more attractive.
+          // This will be used to hold the arrow that will be drawn at the
+          // beginning of the log message.
+          var displayIncomingArrow = chalk.bold.gray('<-');
+
+          // And this one is for the status code display.
+          // (we color it depending on the status code.)
+          var displayStatusCode;
+          if (report.statusCode >= 200 && report.statusCode < 300) {
+            displayStatusCode = chalk.green(report.statusCode);// used to be '->'
+          }
+          else if (report.statusCode >= 300 && report.statusCode < 400) {
+            displayStatusCode = chalk.white(report.statusCode);
+          }
+          else if (report.statusCode >= 400 && report.statusCode < 500) {
+            displayStatusCode = chalk.yellow(report.statusCode);
+          }
+          else {
+            displayStatusCode = chalk.red(report.statusCode);
+          }
+
+          // Make HTTP method (i.e. verb) and request URL path more attractive.
           var displayMethod = chalk[getVerbColor(report.method)](report.method);
+          var displayPath = report.path;
+
+          // Get display miliseconds for the response time.
+          var displayMs = chalk.gray(report.responseTime+'ms');
+
+          // If this request matched a controller action or a view, or if it is
+          // anything other than a GET request, then we make it stand out more
+          // brightly than the others.
+          if (report.method !== 'GET' || report.target.action || report.target.controller || report.target.view || report.target.model) {
+            // It's already bright!
+          }
+          // Otherwise this didn't seem to match an action or view, which probably
+          // means it was a request for an asset.  So we'll tone it down.
+          else {
+            displayMethod = chalk.dim(displayMethod);
+            displayPath = chalk.dim(displayPath);
+            displayIncomingArrow = chalk.dim(displayIncomingArrow);
+            displayMs = chalk.dim(displayMs);
+
+            // Note, as long as the status code is a 2xx, then we completely desaturate it
+            // rather than just toning it down.
+            if (report.statusCode >= 200 && report.statusCode < 300) {
+              displayStatusCode = chalk.gray.dim(report.statusCode);
+            }
+            // Otherwise, we just tone it down.
+            else {
+              displayStatusCode = chalk.dim(displayStatusCode);
+            }
+          }//>-
 
           // Build formatted output.
           var formattedOutput = util.format(
-            chalk.bold(chalk.gray('<-')) + ' %s %s ' + indentation + chalk.gray('(%sms)'),
-            displayMethod, report.path, report.responseTime
+            '%s %s %s '+indentation+' %s',
+            displayIncomingArrow,
+            displayMethod,
+            displayPath,
+            chalk.gray('(')+displayMs+' '+displayStatusCode+chalk.gray(')')
           );
 
           // Now log it.
