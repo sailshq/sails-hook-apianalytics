@@ -6,7 +6,8 @@ var util = require('util');
 var _ = require('lodash');
 var chalk = require('chalk');
 var logRequestWare = require('./private/log-request.middleware');
-var getVerbColor = require('./private/get-verb-color');
+var getHttpMethodColor = require('./private/get-http-method-color');
+var getStatusCodeColor = require('./private/get-status-code-color');
 
 
 /**
@@ -144,22 +145,11 @@ module.exports = function sailsHookApiAnalytics(sails) {
 
             // And this one is for the status code display.
             // (we color it depending on the status code.)
-            var displayStatusCode;
-            if (report.statusCode >= 200 && report.statusCode < 300) {
-              displayStatusCode = chalk.green(report.statusCode);// used to be '->'
-            }
-            else if (report.statusCode >= 300 && report.statusCode < 400) {
-              displayStatusCode = chalk.white(report.statusCode);
-            }
-            else if (report.statusCode >= 400 && report.statusCode < 500) {
-              displayStatusCode = chalk.yellow(report.statusCode);
-            }
-            else {
-              displayStatusCode = chalk.red(report.statusCode);
-            }
+            var statusCodeBaseColor = getStatusCodeColor(report.statusCode);
+            var displayStatusCode = chalk[statusCodeBaseColor](report.statusCode);
 
             // Make HTTP method (i.e. verb) and request URL path more attractive.
-            var displayMethod = chalk[getVerbColor(report.method)](report.method);
+            var displayMethod = chalk[getHttpMethodColor(report.method)](report.method);
             var displayPath = report.path;
 
             // Get display miliseconds for the response time.
@@ -174,9 +164,9 @@ module.exports = function sailsHookApiAnalytics(sails) {
             // Otherwise this didn't seem to match an action or view, which probably
             // means it was a request for an asset.  So we'll tone it down.
             else {
+              displayIncomingArrow = chalk.dim.gray.bold(' -');
               displayMethod = chalk.dim(displayMethod);
               displayPath = chalk.dim(displayPath);
-              displayIncomingArrow = chalk.dim(displayIncomingArrow);
               displayMs = chalk.dim(displayMs);
 
               // Note, as long as the status code is a 2xx, then we completely desaturate it
@@ -235,7 +225,7 @@ module.exports = function sailsHookApiAnalytics(sails) {
 
               // Now log the friendlified exit name, plus any other available metatdata:
               logFn(
-                PREFIX+chalk.bold(friendlifiedExitName)
+                PREFIX+chalk[statusCodeBaseColor](friendlifiedExitName)
               );
 
 
@@ -261,7 +251,7 @@ module.exports = function sailsHookApiAnalytics(sails) {
 
               if (!_.isUndefined(report.responseHeaders['x-exit-view-template-path'])) {
                 logFn(
-                  PREFIX+ chalk.reset.bold('view: ') + chalk.dim.blue(report.responseHeaders['x-exit-view-template-path'])
+                  PREFIX+ chalk.reset('view: ') + chalk.dim.blue(report.responseHeaders['x-exit-view-template-path'])
                 );
               }//>-
 

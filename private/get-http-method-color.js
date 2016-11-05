@@ -1,27 +1,35 @@
 /**
- * Helper function to get current HTTP verb color definition for default logger.
+ * Helper function to get the appropriate chalk color for the specified HTTP method (aka verb).
  *
- * @param   {string}  method
- * @returns {string}
+ * @param   {String}  method
+ * @returns {String}
+ *
  * @private
  */
-module.exports = function getVerbColor(method) {
+
+module.exports = function getHttpMethodColor(method) {
 
   switch (method.toUpperCase()) {
 
     case 'GET':
       return 'cyan';
+
     case 'POST':
       return 'yellow';
+
     case 'PUT':
       return 'yellow';
+
     case 'DELETE':
       return 'yellow';
+
     case 'PATCH':
       return 'yellow';
 
+
     default:
       return 'white';
+
   }
 
 };
