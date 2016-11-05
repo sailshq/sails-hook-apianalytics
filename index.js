@@ -3,7 +3,7 @@
  */
 var _ = require('lodash');
 var chalk = require('chalk');
-var logRequestWare = require('./log-request.middleware');
+var logRequestWare = require('./private/log-request.middleware');
 var getVerbColor = require('./private/get-verb-color');
 
 
