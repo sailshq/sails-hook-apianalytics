@@ -120,6 +120,76 @@ module.exports = function sailsHookApiAnalytics(sails) {
           // Now log it.
           console.log(formattedOutput);
 
+          // If there is an X-Exit response header, then include it.
+          // (plus additional info, if available)
+          if (!_.isUndefined(report.responseHeaders['x-exit'])) {
+
+
+            // Get an appropriate friendly name for this exit.
+            var friendlifiedExitName;
+            if (!_.isUndefined(report.responseHeaders['x-exit-friendly-name'])) {
+              friendlifiedExitName = report.responseHeaders['x-exit-friendly-name'];
+            }
+            else {
+              friendlifiedExitName = _.map(_.words(report.responseHeaders['x-exit']), function(word, i){
+                if (i === 0) { return word; }
+                word = word[0].toLowerCase() + word.slice(1);
+                return word;
+              }).join(' ');
+            }//>-
+
+            // Determine the prefix to use for this additional metadata.
+            var PREFIX = chalk.gray(' |  ');
+
+            // OLD WAY:
+            //
+            // var numSpacesIn2ndaryIndentation = 2+1+report.method.length+1+report.path.length+1+indentation.length+1;
+            // var secondaryIndentation = _.repeat(' ', numSpacesIn2ndaryIndentation);
+            // console.log(
+            //   secondaryIndentation+chalk.bold(friendlifiedExitName)
+            // );
+            //
+            //NEW WAY:
+            console.log(
+              PREFIX+chalk.bold(friendlifiedExitName)
+            );
+
+
+            if (!_.isUndefined(report.responseHeaders['x-exit-description'])) {
+              console.log(
+                PREFIX + chalk.reset(report.responseHeaders['x-exit-description'])
+              );
+            }//>-
+
+            if (!_.isUndefined(report.responseHeaders['x-exit-extended-description'])) {
+              console.log(
+                PREFIX + '\n'+
+                PREFIX + chalk.reset(report.responseHeaders['x-exit-extended-description'])+'\n'+
+                PREFIX
+              );
+            }//>-
+
+            if (!_.isUndefined(report.responseHeaders['x-exit-more-info-url'])) {
+              console.log(
+                PREFIX + chalk.reset(report.responseHeaders['x-exit-more-info-url'])
+              );
+            }//>-
+
+            if (!_.isUndefined(report.responseHeaders['x-exit-view-template-path'])) {
+              console.log(
+                PREFIX+ chalk.reset.bold('view: ') + chalk.dim.blue(report.responseHeaders['x-exit-view-template-path'])
+              );
+            }//>-
+
+            // One last newline to make it easier to read.
+            console.log(
+              chalk.gray(' ° ')
+            );
+
+          }//>-
+
+          // All done.
+
         }//</default `sails.config.apianalytics.onResponse` notifier>
 
       }//</definition of default `sails.config.apianalytics` dictionary>

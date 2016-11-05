@@ -90,6 +90,10 @@ module.exports = function logRequest_middleware(req, res, next) {
     // Add response status code to the report.
     report.statusCode = +res.statusCode;
 
+    // Add response headers to the report.
+    // (note that this is not a documented thing and should not be relied upon!!!!)
+    report.responseHeaders = res._headers;
+
     // Save user session as embedded JSON to keep a permanent record
     report.userSession = _.cloneDeep(req.session);
 
