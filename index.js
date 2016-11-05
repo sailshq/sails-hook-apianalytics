@@ -1,21 +1,23 @@
-'use strict';
-
 /**
  * Module dependencies
  */
 var _ = require('lodash');
 var chalk = require('chalk');
 var logRequestWare = require('./log-request.middleware');
+var getVerbColor = require('./private/get-verb-color');
+
 
 /**
  * sails-hook-apianalytics
  */
 module.exports = function sailsHookApiAnalytics(sails) {
   return {
+
     /**
      * Default configuration for hook, you can override these on your own config file if needed.
      */
     defaults: {
+
       apianalytics: {
         /**
          * The types of requests to log
@@ -31,7 +33,10 @@ module.exports = function sailsHookApiAnalytics(sails) {
          * (e.g. "password")
          * If seen, they will be replaced with "*PROTECTED*"
          */
-        dontLogParams: ['password', 'token'],
+        dontLogParams: [
+          'password',
+          'token'
+        ],
 
         // When request starts
         onRequest: function onRequest(log, req, res) {
@@ -58,7 +63,7 @@ module.exports = function sailsHookApiAnalytics(sails) {
           })();
 
           // Make HTTP verb more attractive
-          var displayVerb = chalk[_getVerbColor(log.method)](log.method.toUpperCase());
+          var displayVerb = chalk[getVerbColor(log.method)](log.method.toUpperCase());
 
           // Defaults to logging result w/ sails.log.verbose
           console.log(chalk.bold(chalk.gray('<-')) + ' %s %s ' + indentation + chalk.gray('(%sms)'), displayVerb, log.path, log.responseTime);
@@ -66,9 +71,12 @@ module.exports = function sailsHookApiAnalytics(sails) {
           if (!_.isUndefined(log.params)) {
             console.log('Params:', log.params);
           }
-        }
-      }
-    },
+        }//</definition of default `sails.config.apianalytics.onResponse` function>
+
+      }//</definition of default `sails.config.apianalytics` dictionary>
+
+    },//</defaults>
+
 
     /**
      * Method that runs automatically when the hook initializes itself.
@@ -76,37 +84,17 @@ module.exports = function sailsHookApiAnalytics(sails) {
      * @param   {Function}  next    Callback function to call after all is done
      */
     initialize: function initialize(next) {
-      sails.log.verbose('Starting apianalytics hook- requests will be logged...');
+      sails.log.debug('Initializing `apianalytics` hook...  (requests to monitored routes will be logged!)');
 
       sails.on('router:before', function routerBefore() {
         _.forEach(sails.config.apianalytics.routesToLog, function iterator(routeAddress) {
           sails.router.bind(routeAddress, logRequestWare);
         });
-      });
+      });//</bind router:before event>
 
-      next();
-    }
+      return next();
+
+    }//</initialize>
+
   };
 };
-
-/**
- * Helper function to get current HTTP verb color definition for default logger.
- *
- * @param   {string}  method
- * @returns {string}
- * @private
- */
-function _getVerbColor(method) {
-  switch (method.toUpperCase()) {
-    case 'GET':
-      return 'green';
-    case 'POST':
-      return 'yellow';
-    case 'PUT':
-      return 'blue';
-    case 'DELETE':
-      return 'red';
-    default:
-      return 'gray';
-  }
-}
