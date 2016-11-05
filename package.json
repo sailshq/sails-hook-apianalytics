@@ -20,9 +20,9 @@
   },
   "homepage": "https://github.com/treeline-io/sails-hook-apianalytics",
   "dependencies": {
-    "fs-extra": "^0.15.0",
-    "lodash": "^3.0.0",
-    "chalk": "^0.5.1"
+    "chalk": "1.1.3",
+    "fs-extra": "0.30.0",
+    "lodash": "3.10.1"
   },
   "repository": {
     "type": "git",
