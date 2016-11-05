@@ -41,10 +41,18 @@ module.exports = {
 
     /**
      * Request parameters which should NEVER be logged.
+     * If seen, they will be replaced with "*REDACTED*"
+     *
      * (e.g. "password")
-     * If seen, they will be replaced with "*PROTECTED*"
+     *
+     * > WARNING:
+     * > This is a SHALLOW check of request body, querystring, and route path parameters.
+     * > Deeply nested properties with these names are not redacted.
      */
-    dontLogParams: ['password', 'token'],
+    dontLogParams: [
+      'password',
+      'token'
+    ],
 
     /**
      * When request starts...

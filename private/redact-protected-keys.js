@@ -9,7 +9,7 @@ var _ = require('lodash');
  * redactProtectedKeys()
  *
  * Loop over the provided dictionary and build a deep clone where keys that match
- * anything on the blacklist have had their RHS values replaced with "*PROTECTED*" (like
+ * anything on the blacklist have had their RHS values replaced with "*REDACTED*" (like
  * literally with that string.)  This is useful for scrubbing things like password` or
  * `illness` for security and/or compliance reasons.
  *
@@ -52,7 +52,7 @@ module.exports = function redactProtectedKeys(dictionary, blacklist) {
   _.each(blacklist, function (protectedPropName) {
 
     if (!_.isUndefined(cleansedCopy[protectedPropName])) {
-      cleansedCopy[protectedPropName] = '*PROTECTED*';
+      cleansedCopy[protectedPropName] = '*REDACTED*';
     }
 
   });//</_.each>

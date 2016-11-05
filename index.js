@@ -33,7 +33,7 @@ module.exports = function sailsHookApiAnalytics(sails) {
         /**
          * Parameters which should NEVER be logged
          * (e.g. "password")
-         * If seen, they will be replaced with "*PROTECTED*"
+         * If seen, they will be replaced with "*REDACTED*"
          */
         dontLogParams: [
           'password',
