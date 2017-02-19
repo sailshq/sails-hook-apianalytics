@@ -21,7 +21,7 @@ module.exports = function logRequest_middleware(req, res, next) {
     path: req.path,
     method: req.method,
 
-    allParams: redactProtectedKeys(req.allParams(), sails.config.apianalytics.dontLogParams),
+    allParams: redactProtectedKeys(req.allParams(), sails.config.apianalytics.dontLogParams, sails.config.apianalytics.recusive),
 
     protocol: req.protocol,
 
@@ -39,9 +39,9 @@ module.exports = function logRequest_middleware(req, res, next) {
       url: req.url,
       transport: req.transport,
       options: req.options,
-      queryParams: redactProtectedKeys(req.query, sails.config.apianalytics.dontLogParams),
-      routeParams: redactProtectedKeys(req.params, sails.config.apianalytics.dontLogParams),
-      bodyParams: redactProtectedKeys(req.body, sails.config.apianalytics.dontLogParams)
+      queryParams: redactProtectedKeys(req.query, sails.config.apianalytics.dontLogParams, sails.config.apianalytics.recusive),
+      routeParams: redactProtectedKeys(req.params, sails.config.apianalytics.dontLogParams, sails.config.apianalytics.recusive),
+      bodyParams: redactProtectedKeys(req.body, sails.config.apianalytics.dontLogParams, sails.config.apianalytics.recusive)
     }
 
   };//</build initial report>
