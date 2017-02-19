@@ -31,7 +31,7 @@ var _ = require('lodash');
  * @returns {Dictionary}
  */
 
-module.exports = function redactProtectedKeys(dictionary, blacklist, recusive) {
+module.exports = function redactProtectedKeys(dictionary, blacklist, recursive) {
 
   if (!_.isObject(dictionary)) {
     return dictionary;
@@ -44,8 +44,8 @@ module.exports = function redactProtectedKeys(dictionary, blacklist, recusive) {
     throw new Error('Consistency violation: Unexpected bad usage in cleanseDictionary.  Expected blacklist to be an array of strings, but got: '+util.inspect(blacklist,{depth:null}));
   }//>-•
 
-  if(_.isUndefined(recusive)){
-    recusive = false;
+  if(_.isUndefined(recursive)){
+    recursive = false;
   }
 
   // Get deep clone of dictionary.
@@ -60,7 +60,7 @@ module.exports = function redactProtectedKeys(dictionary, blacklist, recusive) {
 
   });//</_.each>
 
-  if(recusive){
+  if(recursive){
     // Loop over each top-level property and check if it is an object
     _.each(cleansedCopy, function(value, key){
       if(_.isObject(cleansedCopy[key])){
