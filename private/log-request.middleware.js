@@ -95,7 +95,7 @@ module.exports = function logRequest_middleware(req, res, next) {
     report.responseHeaders = res._headers;
 
     // Save user session as embedded JSON to keep a permanent record
-    report.userSession = _.cloneDeep(req.session);
+    report.userSession = redactProtectedKeys(_.cloneDeep(req.session), sails.config.apianalytics.dontLogParams, sails.config.apianalytics.recursive);
 
     // Call log function
     if (_.isFunction(sails.config.apianalytics.onResponse)) {
