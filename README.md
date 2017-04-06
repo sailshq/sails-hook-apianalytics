@@ -51,13 +51,23 @@ module.exports = {
      * (e.g. "password")
      *
      * > WARNING:
-     * > This is a SHALLOW check of request body, querystring, and route path parameters.
+     * > If recursive is set to false (default) This is a SHALLOW check of request body, querystring, and route path parameters.
      * > Deeply nested properties with these names are not redacted.
+     * > If recursive is set to true, a one level check and reduction is done.
+     * > For example on put request:
+     * > { '0': 'api/v1/users/2',
+     * >  user: 
+     * >  { username: 'fauser',
+     * >    password: '*REDACTED*',
+     * >    token: '*REDACTED*',
+     * >   } 
+     * > }
      */
     dontLogParams: [
       'password',
       'token'
     ],
+    recursive: false,
 
     /**
      * When request starts...

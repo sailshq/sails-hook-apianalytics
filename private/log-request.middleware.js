@@ -21,7 +21,7 @@ module.exports = function logRequest_middleware(req, res, next) {
     path: req.path,
     method: req.method,
 
-    allParams: redactProtectedKeys(req.allParams(), sails.config.apianalytics.dontLogParams),
+    allParams: redactProtectedKeys(req.allParams(), sails.config.apianalytics.dontLogParams, sails.config.apianalytics.recursive),
 
     protocol: req.protocol,
 
@@ -39,9 +39,9 @@ module.exports = function logRequest_middleware(req, res, next) {
       url: req.url,
       transport: req.transport,
       options: req.options,
-      queryParams: redactProtectedKeys(req.query, sails.config.apianalytics.dontLogParams),
-      routeParams: redactProtectedKeys(req.params, sails.config.apianalytics.dontLogParams),
-      bodyParams: redactProtectedKeys(req.body, sails.config.apianalytics.dontLogParams)
+      queryParams: redactProtectedKeys(req.query, sails.config.apianalytics.dontLogParams, sails.config.apianalytics.recursive),
+      routeParams: redactProtectedKeys(req.params, sails.config.apianalytics.dontLogParams, sails.config.apianalytics.recursive),
+      bodyParams: redactProtectedKeys(req.body, sails.config.apianalytics.dontLogParams, sails.config.apianalytics.recursive)
     }
 
   };//</build initial report>
@@ -95,7 +95,7 @@ module.exports = function logRequest_middleware(req, res, next) {
     report.responseHeaders = res._headers;
 
     // Save user session as embedded JSON to keep a permanent record
-    report.userSession = _.cloneDeep(req.session);
+    report.userSession = redactProtectedKeys(_.cloneDeep(req.session), sails.config.apianalytics.dontLogParams, sails.config.apianalytics.recursive);
 
     // Call log function
     if (_.isFunction(sails.config.apianalytics.onResponse)) {
