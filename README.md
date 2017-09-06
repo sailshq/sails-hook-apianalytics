@@ -60,44 +60,7 @@ module.exports = {
     dontLogParams: [
       'password',
       'token'
-    ],
-
-    /**
-     * When request starts...
-     *
-     * > If omitted, this defaults to doing nothing.
-     * > This can be useful for debugging.
-     *
-     * @param {Dictionary} report  [info about the request]
-     * @param {Ref} req  [request object -- careful not to modify!]
-     * @param {Ref} res  [response object -- careful not to modify!  And don't try to respond!]
-     * @synchronous
-     */
-    onRequest: function onRequest(report, req, res) {
-
-      // ...
-
-      return;
-    },
-
-    /**
-     * When response is sent...
-     *
-     * > If omitted, this defaults to logging request metadata to the
-     * > console in a vaguely attractive way.  If you define this function,
-     * > then it will override the default output.
-     *
-     * @param {Dictionary} report  [info about the request]
-     * @param {Ref} req  [request object -- careful not to modify!]
-     * @param {Ref} res  [response object -- careful not to modify!  And don't try to respond!]
-     * @synchronous
-     */
-    onResponse: function onResponse(report, req, res) {
-
-      // ...
-
-      return;
-    }
+    ]
   }
 };
 ```
