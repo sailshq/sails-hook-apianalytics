@@ -36,7 +36,10 @@ module.exports = {
     /**
      * An array of route addresses to monitor.
      *
-     * (e.g. [ 'get /foo/bar', 'post /foo', 'all /admin/*' ])
+     * (e.g. [ 'GET /foo/bar', 'POST /foo', 'all /admin/*' ])
+     *
+     * To skip assets, use:
+     *  'GET r|^((?![^?]*\\/[^?\\/]+\\.[^?\\/]+(\\?.*)?).)*$|'
      *
      * Defaults to `[ '/*' ]`.
      */
