@@ -22,6 +22,8 @@ It will look something like this:
 
 ## Configuration
 
+This hook works pretty well for most use cases out of the box.
+
 Optionally, you can customize this hook in a few different ways by configuring `sails.config.apianalytics`.
 
 For instance, you might create `config/apianalytics.js`:
@@ -38,12 +40,12 @@ module.exports = {
      *
      * (e.g. [ 'GET /foo/bar', 'POST /foo', 'all /admin/*' ])
      *
-     * To skip assets, use:
-     *  'GET r|^((?![^?]*\\/[^?\\/]+\\.[^?\\/]+(\\?.*)?).)*$|'
-     *
-     * Defaults to `[ '/*' ]`.
+     * Defaults to logging all POST, PATCH, PUT, DELETE requests, and all
+     * GET requests except for those that appear to be for assets
+     * (i.e. using "GET r|^((?![^?]*\\/[^?\\/]+\\.[^?\\/]+(\\?.*)?).)*$|")
      */
     routesToLog: [
+      // If you want to log everything- including requests for assets, use the following:
       '/*'
     ],
 

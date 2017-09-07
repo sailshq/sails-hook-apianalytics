@@ -24,7 +24,12 @@ module.exports = function sailsHookApiAnalytics(sails) {
       apianalytics: {
 
         routesToLog: [
-          '/*'
+          'GET r|^((?![^?]*\\/[^?\\/]+\\.[^?\\/]+(\\?.*)?).)*$|',
+          // (^^Leave out assets)
+          'POST /*',
+          'PATCH /*',
+          'PUT /*',
+          'DELETE /*',
         ],
 
         dontLogParams: [
