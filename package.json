@@ -2,7 +2,7 @@
   "name": "sails-hook-apianalytics",
   "version": "2.0.0",
   "description": "Hook for advanced logging of API requests to a Sails.js server.",
-  "main": "index.js",
+  "main": "lib/sails-hook-apianalytics.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
